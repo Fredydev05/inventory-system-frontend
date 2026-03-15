@@ -1,0 +1,144 @@
+/* AG-Grid styles loaded globally in styles.scss */
+
+.products-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+
+  .page-header {
+    padding: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .header-content {
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #262626;
+      }
+
+      p {
+        color: #8c8c8c;
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+
+      button {
+        height: 36px;
+
+        span[nz-icon] {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  .grid-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+
+    .grid-toolbar {
+      margin-bottom: 16px;
+
+      .search-input {
+        width: 300px;
+
+        ::ng-deep {
+          .ant-input-affix-wrapper {
+            border-radius: 8px;
+          }
+        }
+      }
+    }
+
+    .ag-theme-alpine {
+      flex: 1;
+      min-height: 400px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+      ::ng-deep {
+        .ag-header {
+          background: #fafafa;
+          border-bottom: 2px solid #f0f0f0;
+
+          .ag-header-cell-label {
+            font-weight: 600;
+            color: #262626;
+          }
+        }
+
+        .ag-row {
+          &:hover {
+            background: #f5f5f5;
+          }
+        }
+
+        .ag-cell {
+          display: flex;
+          align-items: center;
+        }
+
+        .action-btn {
+          padding: 4px 8px;
+          border: 1px solid #d9d9d9;
+          background: white;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-right: 4px;
+          transition: all 0.3s;
+
+          &:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+          }
+
+          &.edit-btn:hover {
+            border-color: #1890ff;
+            background: #e6f7ff;
+          }
+
+          &.delete-btn:hover {
+            border-color: #ff4d4f;
+            background: #fff1f0;
+            color: #ff4d4f;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .products-container {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+
+      .header-actions {
+        justify-content: stretch;
+
+        button {
+          flex: 1;
+        }
+      }
+    }
+
+    .grid-container .grid-toolbar .search-input {
+      width: 100%;
+    }
+  }
+}

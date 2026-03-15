@@ -1,0 +1,79 @@
+<nz-layout class="app-layout">
+  <!-- Sidebar -->
+  <nz-sider
+    class="sidebar"
+    nzCollapsible
+    nzWidth="240px"
+    nzBreakpoint="lg"
+    [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null"
+  >
+    <div class="logo">
+      <span nz-icon nzType="shop" nzTheme="twotone"></span>
+      @if (!isCollapsed()) {
+        <span class="logo-text">Inventario</span>
+      }
+    </div>
+
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed()">
+      @for (item of menuItems; track item.route) {
+        <li nz-menu-item (click)="onMenuClick(item)">
+          <span nz-icon [nzType]="item.icon"></span>
+          <span>{{ item.title }}</span>
+        </li>
+      }
+    </ul>
+  </nz-sider>
+
+  <!-- Main Content -->
+  <nz-layout class="inner-layout">
+    <!-- Header -->
+    <nz-header class="header">
+      <div class="header-left">
+        <span
+          class="trigger"
+          nz-icon
+          [nzType]="isCollapsed() ? 'menu-unfold' : 'menu-fold'"
+          (click)="isCollapsed.set(!isCollapsed())"
+        ></span>
+      </div>
+
+      <div class="header-right">
+        <nz-badge [nzCount]="5" class="notification-badge">
+          <span nz-icon nzType="bell" class="header-icon"></span>
+        </nz-badge>
+
+        <div class="user-menu" nz-dropdown [nzDropdownMenu]="userDropdown" nzTrigger="click">
+          <nz-avatar nzIcon="user" [nzSize]="36"></nz-avatar>
+          <span class="user-name">{{ authService.currentUser()?.name }}</span>
+          <span nz-icon nzType="down"></span>
+        </div>
+
+        <nz-dropdown-menu #userDropdown="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item>
+              <span nz-icon nzType="user"></span>
+              <span>Perfil</span>
+            </li>
+            <li nz-menu-item>
+              <span nz-icon nzType="setting"></span>
+              <span>Configuración</span>
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item (click)="logout()">
+              <span nz-icon nzType="logout"></span>
+              <span>Cerrar Sesión</span>
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </nz-header>
+
+    <!-- Content -->
+    <nz-content class="content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

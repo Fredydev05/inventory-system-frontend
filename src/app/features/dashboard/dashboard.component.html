@@ -1,0 +1,49 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <p>Bienvenido al sistema de inventario</p>
+  </div>
+
+  <div nz-row [nzGutter]="16" class="stats-row">
+    @for (stat of statistics(); track stat.title) {
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzLg]="6">
+        <nz-card class="stat-card" [nzBordered]="false">
+          <div class="stat-content">
+            <div class="stat-icon" [style.background]="stat.iconColor + '20'">
+              <span nz-icon [nzType]="stat.icon" [style.color]="stat.iconColor"></span>
+            </div>
+            <div class="stat-info">
+              <div class="stat-title">{{ stat.title }}</div>
+              <nz-statistic
+                [nzValue]="stat.value"
+                [nzPrefix]="stat.prefix"
+                [nzSuffix]="stat.suffix"
+                [nzValueStyle]="stat.valueStyle"
+              ></nz-statistic>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+    }
+  </div>
+
+  <div nz-row [nzGutter]="16" class="charts-row">
+    <div nz-col [nzXs]="24" [nzLg]="16">
+      <nz-card nzTitle="Ventas del Año" [nzBordered]="false" class="chart-card">
+        <div class="chart-placeholder">
+          <span nz-icon nzType="bar-chart" class="placeholder-icon"></span>
+          <p>Gráfico de ventas mensuales</p>
+        </div>
+      </nz-card>
+    </div>
+
+    <div nz-col [nzXs]="24" [nzLg]="8">
+      <nz-card nzTitle="Productos Más Vendidos" [nzBordered]="false" class="chart-card">
+        <div class="chart-placeholder">
+          <span nz-icon nzType="pie-chart" class="placeholder-icon"></span>
+          <p>Gráfico de productos</p>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+</div>

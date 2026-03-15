@@ -1,0 +1,79 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">
+        <span nz-icon nzType="shop" nzTheme="twotone" class="logo-icon"></span>
+      </div>
+      <h1>Sistema de Inventario</h1>
+      <p>Ingresa tus credenciales para continuar</p>
+    </div>
+
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor ingresa un email válido">
+          <nz-input-group nzPrefixIcon="user">
+            <input
+              type="email"
+              nz-input
+              formControlName="email"
+              placeholder="Correo electrónico"
+              autocomplete="email"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control nzErrorTip="La contraseña debe tener al menos 6 caracteres">
+          <nz-input-group [nzSuffix]="suffixTemplate" nzPrefixIcon="lock">
+            <input
+              [type]="passwordVisible() ? 'text' : 'password'"
+              nz-input
+              formControlName="password"
+              placeholder="Contraseña"
+              autocomplete="current-password"
+            />
+          </nz-input-group>
+          <ng-template #suffixTemplate>
+            <span
+              nz-icon
+              [nzType]="passwordVisible() ? 'eye-invisible' : 'eye'"
+              (click)="passwordVisible.set(!passwordVisible())"
+              class="password-toggle"
+            ></span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <label nz-checkbox formControlName="remember">
+            <span>Recordarme</span>
+          </label>
+          <a class="login-form-forgot" href="javascript:void(0)">¿Olvidaste tu contraseña?</a>
+        </nz-form-control>
+      </nz-form-item>
+
+      <button
+        nz-button
+        nzType="primary"
+        nzBlock
+        nzSize="large"
+        [nzLoading]="loading()"
+        type="submit"
+      >
+        Iniciar Sesión
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>© 2026 Sistema de Inventario. Todos los derechos reservados.</p>
+    </div>
+  </div>
+
+  <div class="login-background">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+</div>
