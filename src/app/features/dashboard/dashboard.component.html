@@ -1,49 +1,192 @@
 <div class="dashboard">
+  <!-- Header -->
   <div class="dashboard-header">
-    <h1>Dashboard</h1>
-    <p>Bienvenido al sistema de inventario</p>
+    <div class="header-text">
+      <h1>Dashboard</h1>
+      <p>Planifica, prioriza y gestiona tu inventario con facilidad.</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="primary" class="btn-primary-green">
+        <span nz-icon nzType="plus"></span>
+        Agregar Producto
+      </button>
+      <button nz-button class="btn-outline">
+        <span nz-icon nzType="import"></span>
+        Importar Datos
+      </button>
+    </div>
   </div>
 
-  <div nz-row [nzGutter]="16" class="stats-row">
-    @for (stat of statistics(); track stat.title) {
-      <div nz-col [nzXs]="24" [nzSm]="12" [nzLg]="6">
-        <nz-card class="stat-card" [nzBordered]="false">
-          <div class="stat-content">
-            <div class="stat-icon" [style.background]="stat.iconColor + '20'">
-              <span nz-icon [nzType]="stat.icon" [style.color]="stat.iconColor"></span>
-            </div>
-            <div class="stat-info">
-              <div class="stat-title">{{ stat.title }}</div>
-              <nz-statistic
-                [nzValue]="stat.value"
-                [nzPrefix]="stat.prefix"
-                [nzSuffix]="stat.suffix"
-                [nzValueStyle]="stat.valueStyle"
-              ></nz-statistic>
-            </div>
-          </div>
-        </nz-card>
+  <!-- Stat Cards -->
+  <div class="stat-cards">
+    @for (stat of statistics(); track stat.title; let i = $index) {
+      <div class="stat-card" [class.accent]="stat.accent">
+        <div class="stat-top">
+          <span class="stat-title">{{ stat.title }}</span>
+          <span nz-icon nzType="arrow-right" class="stat-arrow" nzTheme="outline"></span>
+        </div>
+        <div class="stat-value">
+          @if (stat.prefix) {
+            <span class="stat-prefix">{{ stat.prefix }}</span>
+          }
+          {{ stat.value | number }}
+        </div>
+        <div class="stat-note">
+          <span nz-icon [nzType]="stat.icon" class="stat-note-icon"></span>
+          {{ stat.note }}
+        </div>
       </div>
     }
   </div>
 
-  <div nz-row [nzGutter]="16" class="charts-row">
-    <div nz-col [nzXs]="24" [nzLg]="16">
-      <nz-card nzTitle="Ventas del Año" [nzBordered]="false" class="chart-card">
-        <div class="chart-placeholder">
-          <span nz-icon nzType="bar-chart" class="placeholder-icon"></span>
-          <p>Gráfico de ventas mensuales</p>
-        </div>
-      </nz-card>
+  <!-- Middle Row: Analytics + Reminders + Activities -->
+  <div class="middle-row">
+    <!-- Analytics -->
+    <div class="card analytics-card">
+      <h3 class="card-title">Analíticas de Inventario</h3>
+      <div class="analytics-chart">
+        @for (bar of analyticsData(); track bar.day) {
+          <div class="bar-group">
+            <div class="bar-wrapper">
+              <div
+                class="bar"
+                [style.height.%]="(bar.value / getMaxAnalyticsValue()) * 100"
+              >
+                @if (bar.value === getMaxAnalyticsValue()) {
+                  <span class="bar-label">{{ bar.value }}%</span>
+                }
+              </div>
+            </div>
+            <span class="bar-day">{{ bar.day }}</span>
+          </div>
+        }
+      </div>
     </div>
 
-    <div nz-col [nzXs]="24" [nzLg]="8">
-      <nz-card nzTitle="Productos Más Vendidos" [nzBordered]="false" class="chart-card">
-        <div class="chart-placeholder">
-          <span nz-icon nzType="pie-chart" class="placeholder-icon"></span>
-          <p>Gráfico de productos</p>
+    <!-- Reminders -->
+    <div class="card reminders-card">
+      <h3 class="card-title">Recordatorios</h3>
+      <div class="reminder-content">
+        <h2 class="reminder-title">Auditoría de Inventario</h2>
+        <p class="reminder-time">
+          <span nz-icon nzType="clock-circle"></span>
+          Hora: 02:00 pm - 04:00 pm
+        </p>
+        <button class="reminder-btn">
+          <span nz-icon nzType="video-camera"></span>
+          Iniciar Reunión
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="card activities-card">
+      <div class="card-header">
+        <h3 class="card-title">Actividades</h3>
+        <button class="btn-add">
+          <span nz-icon nzType="plus"></span> Nueva
+        </button>
+      </div>
+      <div class="activities-list">
+        @for (activity of recentActivities(); track activity.title) {
+          <div class="activity-item">
+            <div class="activity-icon" [style.background]="activity.color">
+              <span nz-icon [nzType]="activity.icon"></span>
+            </div>
+            <div class="activity-info">
+              <span class="activity-title">{{ activity.title }}</span>
+              <span class="activity-date">Fecha: {{ activity.date }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row: Team + Progress + Timer -->
+  <div class="bottom-row">
+    <!-- Team Collaboration -->
+    <div class="card team-card">
+      <div class="card-header">
+        <h3 class="card-title">Equipo de Trabajo</h3>
+        <button class="btn-add">
+          <span nz-icon nzType="plus"></span> Agregar
+        </button>
+      </div>
+      <div class="team-list">
+        @for (member of teamMembers(); track member.name) {
+          <div class="team-member">
+            <div class="member-avatar" [style.background]="member.color">
+              {{ member.avatar }}
+            </div>
+            <div class="member-info">
+              <span class="member-name">{{ member.name }}</span>
+              <span class="member-task">Trabajando en <strong>{{ member.task }}</strong></span>
+            </div>
+            <span class="member-status" [style.color]="getStatusColor(member.status)"
+                  [style.background]="getStatusColor(member.status) + '18'">
+              {{ member.status }}
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Inventory Progress -->
+    <div class="card progress-card">
+      <h3 class="card-title">Estado del Inventario</h3>
+      <div class="progress-content">
+        <div class="donut-chart">
+          <svg viewBox="0 0 120 120" class="donut-svg">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#f0f0f0" stroke-width="12"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#2D6A4F" stroke-width="12"
+                    [attr.stroke-dasharray]="(inventoryProgress() / 100) * 314 + ' ' + 314"
+                    stroke-dashoffset="0" stroke-linecap="round"
+                    transform="rotate(-90 60 60)"
+                    class="donut-progress"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#F4A261" stroke-width="12"
+                    [attr.stroke-dasharray]="((100 - inventoryProgress()) / 100 * 0.6) * 314 + ' ' + 314"
+                    [attr.stroke-dashoffset]="-(inventoryProgress() / 100) * 314"
+                    stroke-linecap="round"
+                    transform="rotate(-90 60 60)"
+                    class="donut-secondary"/>
+          </svg>
+          <div class="donut-center">
+            <span class="donut-value">{{ inventoryProgress() }}%</span>
+            <span class="donut-label">Disponible</span>
+          </div>
         </div>
-      </nz-card>
+        <div class="progress-legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #2D6A4F"></span>
+            Disponible
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #F4A261"></span>
+            En Proceso
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #E76F51"></span>
+            Agotado
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Tracker -->
+    <div class="card timer-card">
+      <h3 class="card-title timer-title">Hora Actual</h3>
+      <div class="timer-display">
+        {{ currentTime() }}
+      </div>
+      <div class="timer-actions">
+        <button class="timer-btn pause">
+          <span nz-icon nzType="pause-circle" nzTheme="fill"></span>
+        </button>
+        <button class="timer-btn stop">
+          <span nz-icon nzType="stop" nzTheme="fill"></span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

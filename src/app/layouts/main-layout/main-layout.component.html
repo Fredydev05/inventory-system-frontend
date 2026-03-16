@@ -3,21 +3,45 @@
   <nz-sider
     class="sidebar"
     nzCollapsible
-    nzWidth="240px"
+    nzWidth="260px"
     nzBreakpoint="lg"
     [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null"
+    [nzTheme]="'light'"
   >
+    <!-- Logo -->
     <div class="logo">
-      <span nz-icon nzType="shop" nzTheme="twotone"></span>
+      <div class="logo-icon">
+        <span nz-icon nzType="inbox" nzTheme="outline"></span>
+      </div>
       @if (!isCollapsed()) {
         <span class="logo-text">Inventario</span>
       }
     </div>
 
-    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed()">
+    <!-- Menu Section -->
+    @if (!isCollapsed()) {
+      <div class="menu-label">MENÚ</div>
+    }
+    <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed()">
       @for (item of menuItems; track item.route) {
-        <li nz-menu-item (click)="onMenuClick(item)">
+        <li nz-menu-item [nzSelected]="isActiveRoute(item.route)" (click)="onMenuClick(item)" class="menu-item">
+          <span nz-icon [nzType]="item.icon"></span>
+          <span>{{ item.title }}</span>
+          @if (item.badge) {
+            <nz-badge [nzCount]="item.badge" class="menu-badge"></nz-badge>
+          }
+        </li>
+      }
+    </ul>
+
+    <!-- General Section -->
+    @if (!isCollapsed()) {
+      <div class="menu-label">GENERAL</div>
+    }
+    <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed()" class="general-menu">
+      @for (item of generalItems; track item.route) {
+        <li nz-menu-item (click)="onGeneralClick(item)" class="menu-item">
           <span nz-icon [nzType]="item.icon"></span>
           <span>{{ item.title }}</span>
         </li>
@@ -36,17 +60,29 @@
           [nzType]="isCollapsed() ? 'menu-unfold' : 'menu-fold'"
           (click)="isCollapsed.set(!isCollapsed())"
         ></span>
+
+        <div class="search-box">
+          <span nz-icon nzType="search"></span>
+          <input type="text" placeholder="Buscar..." class="search-input" />
+          <span class="search-shortcut">Ctrl+F</span>
+        </div>
       </div>
 
       <div class="header-right">
-        <nz-badge [nzCount]="5" class="notification-badge">
+        <nz-badge [nzDot]="true" class="header-icon-wrapper">
+          <span nz-icon nzType="mail" class="header-icon"></span>
+        </nz-badge>
+
+        <nz-badge [nzCount]="5" class="header-icon-wrapper">
           <span nz-icon nzType="bell" class="header-icon"></span>
         </nz-badge>
 
         <div class="user-menu" nz-dropdown [nzDropdownMenu]="userDropdown" nzTrigger="click">
-          <nz-avatar nzIcon="user" [nzSize]="36"></nz-avatar>
-          <span class="user-name">{{ authService.currentUser()?.name }}</span>
-          <span nz-icon nzType="down"></span>
+          <nz-avatar nzIcon="user" [nzSize]="36" class="user-avatar"></nz-avatar>
+          <div class="user-info">
+            <span class="user-name">{{ authService.currentUser()?.name || 'Usuario' }}</span>
+            <span class="user-email">{{ authService.currentUser()?.email || 'user@mail.com' }}</span>
+          </div>
         </div>
 
         <nz-dropdown-menu #userDropdown="nzDropdownMenu">
@@ -71,9 +107,7 @@
 
     <!-- Content -->
     <nz-content class="content">
-      <div class="content-wrapper">
-        <router-outlet></router-outlet>
-      </div>
+      <router-outlet></router-outlet>
     </nz-content>
   </nz-layout>
 </nz-layout>
