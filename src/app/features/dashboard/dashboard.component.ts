@@ -9,6 +9,8 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { DashboardService } from '../../core/services/dashboard.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 interface StatCard {
   title: string;
@@ -64,14 +66,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   recentActivities = signal<RecentActivity[]>([]);
   currentTime = signal('00:00:00');
   inventoryProgress = signal(68);
+  dashboardData: any;
 
   private timerInterval: ReturnType<typeof setInterval> | null = null;
 
+  constructor(
+    private dashboardService: DashboardService,
+    private message: NzMessageService
+  ) { }
+
   ngOnInit(): void {
-    this.loadStatistics();
-    this.loadAnalytics();
-    this.loadTeamMembers();
-    this.loadRecentActivities();
+    this.getDashboardData();
     this.startClock();
   }
 
@@ -98,7 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.statistics.set([
       {
         title: 'Total Productos',
-        value: 245,
+        value: this.dashboardData?.total_products,
         prefix: '',
         note: 'Incrementó desde el mes pasado',
         icon: 'rise',
@@ -106,7 +111,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       {
         title: 'Ventas del Mes',
-        value: 18500,
+        value: this.dashboardData?.total_sales,
         prefix: '$',
         note: 'Incrementó desde el mes pasado',
         icon: 'rise',
@@ -222,5 +227,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getMaxAnalyticsValue(): number {
     return Math.max(...this.analyticsData().map(d => d.value));
+  }
+
+
+  public getDashboardData() {
+    this.dashboardService.getDashboardData().subscribe({
+      next: (res: any) => {
+        this.dashboardData = res?.data;
+        this.loadStatistics();
+        this.loadAnalytics();
+        this.loadTeamMembers();
+        this.loadRecentActivities();
+      },
+      error: (err) => {
+        this.message.error('Error while fetching dashboard data: ' + err?.error?.message);
+
+      }
+    });
   }
 }

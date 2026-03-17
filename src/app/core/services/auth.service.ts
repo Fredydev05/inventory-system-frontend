@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, User } from '../models';
 import { StorageService } from './storage.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:8000/api';
+  private readonly API_URL = environment.apiUrl;
 
   currentUser = signal<User | null>(null);
   isAuthenticated = signal<boolean>(false);
