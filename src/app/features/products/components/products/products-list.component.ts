@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridReadyEvent, GridOptions } from 'ag-grid-community';
+import { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -27,66 +27,71 @@ import { ProductService } from '../../services/product.service';
 export class ProductsListComponent implements OnInit {
   loading = signal(false);
   rowData = signal<Product[]>([]);
+  selectedProduct = signal<Product | null>(null);
+
+  private gridApi?: GridApi<Product>;
 
   colDefs: ColDef<Product>[] = [
     {
       field: 'code',
-      headerName: 'Código',
+      headerName: 'Codigo',
       width: 130,
       filter: 'agTextColumnFilter',
       floatingFilter: true,
-      pinned: 'left'
+      pinned: 'left',
+      cellClass: 'cell-ellipsis'
     },
     {
       field: 'name',
       headerName: 'Producto',
-      width: 250,
+      width: 220,
       filter: 'agTextColumnFilter',
-      floatingFilter: true
+      floatingFilter: true,
+      cellClass: 'cell-ellipsis',
+      tooltipField: 'name'
     },
     {
-      field: 'category.name',
-      headerName: 'Categoría',
-      width: 180,
+      headerName: 'Categoria',
+      width: 170,
       filter: 'agTextColumnFilter',
-      floatingFilter: true
+      floatingFilter: true,
+      valueGetter: params => params.data?.category?.name || '-',
+      cellClass: 'cell-ellipsis'
     },
     {
       field: 'current_stock',
       headerName: 'Stock Actual',
       width: 140,
       type: 'numericColumn',
-      cellRenderer: (params: any) => {
+      cellRenderer: (params: ICellRendererParams<Product>) => {
         const stock = params.value;
-        const minStock = params.data.minimum_stock;
-        const isLow = stock <= minStock;
+        const minStock = params.data?.minimum_stock ?? 0;
+        const isLow = Number(stock) <= Number(minStock);
+
         return `
-          <span style="
-            color: ${isLow ? '#ff4d4f' : '#52c41a'};
-            font-weight: 600;
-          ">
-            ${stock}
+          <span style="color: ${isLow ? '#ff4d4f' : '#52c41a'}; font-weight: 600;">
+            ${stock ?? '-'}
           </span>
         `;
       }
     },
     {
       field: 'minimum_stock',
-      headerName: 'Stock Mínimo',
-      width: 150,
+      headerName: 'Stock Min.',
+      width: 120,
       type: 'numericColumn'
-    },
-    {
-      field: 'purchase_price',
-      headerName: 'Precio Compra',
-      width: 150,
-      type: 'numericColumn',
-      valueFormatter: params => '$' + (parseFloat(params.value) || 0).toFixed(2)
     },
     {
       field: 'sale_price',
       headerName: 'Precio Venta',
-      width: 150,
+      width: 140,
+      type: 'numericColumn',
+      valueFormatter: params => '$' + (parseFloat(params.value) || 0).toFixed(2)
+    },
+    {
+      field: 'purchase_price',
+      headerName: 'Costo',
+      width: 130,
       type: 'numericColumn',
       valueFormatter: params => '$' + (parseFloat(params.value) || 0).toFixed(2)
     },
@@ -94,14 +99,14 @@ export class ProductsListComponent implements OnInit {
       field: 'is_active',
       headerName: 'Estado',
       width: 120,
-      cellRenderer: (params: any) => {
-        const isActive = params.value;
+      cellRenderer: (params: ICellRendererParams<Product>) => {
+        const isActive = Boolean(params.value);
         return `
           <span style="
             padding: 4px 12px;
-            border-radius: 4px;
+            border-radius: 999px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             background: ${isActive ? '#f6ffed' : '#fff1f0'};
             color: ${isActive ? '#52c41a' : '#ff4d4f'};
             border: 1px solid ${isActive ? '#b7eb8f' : '#ffa39e'};
@@ -110,41 +115,23 @@ export class ProductsListComponent implements OnInit {
           </span>
         `;
       }
-    },
-    {
-      headerName: 'Acciones',
-      width: 140,
-      pinned: 'right',
-      cellRenderer: () => {
-        return `
-          <button class="action-btn edit-btn">
-            <span class="anticon anticon-edit"></span>
-          </button>
-          <button class="action-btn delete-btn">
-            <span class="anticon anticon-delete"></span>
-          </button>
-        `;
-      },
-      sortable: false,
-      filter: false
     }
+    
   ];
 
-  gridOptions: GridOptions = {
+  gridOptions: GridOptions<Product> = {
     theme: 'legacy',
     defaultColDef: {
       sortable: true,
       resizable: true,
-      filter: true
+      filter: true,
+      minWidth: 110
     },
     pagination: true,
     paginationPageSize: 20,
     paginationPageSizeSelector: [10, 20, 50, 100],
     animateRows: true,
-    rowSelection: {
-      mode: 'multiRow',
-      enableClickSelection: false
-    }
+    
   };
 
   constructor(
@@ -159,31 +146,36 @@ export class ProductsListComponent implements OnInit {
   loadProducts(): void {
     this.loading.set(true);
     this.productService.getProducts().subscribe({
-      next: (products) => {
+      next: products => {
         this.rowData.set(products);
+        this.selectedProduct.set(products[0] ?? null);
         this.loading.set(false);
       },
-      error: (error) => {
+      error: () => {
         this.message.error('Error al cargar productos');
         this.loading.set(false);
       }
     });
   }
 
-  onGridReady(params: GridReadyEvent): void {
-    params.api.sizeColumnsToFit();
+  onGridReady(params: GridReadyEvent<Product>): void {
+    this.gridApi = params.api;
   }
 
   exportToExcel(): void {
-    this.message.info('Función de exportación en desarrollo');
+    this.message.info('Funcion de exportacion en desarrollo');
   }
 
   addProduct(): void {
-    this.message.info('Función de agregar producto en desarrollo');
+    this.message.info('Funcion de agregar producto en desarrollo');
   }
 
   onQuickFilterChanged(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    // Implement quick filter logic
+    this.gridApi?.setGridOption('quickFilterText', value);
+  }
+
+  closeDetails(): void {
+    this.selectedProduct.set(null);
   }
 }
