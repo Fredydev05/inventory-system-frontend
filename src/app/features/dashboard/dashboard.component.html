@@ -139,7 +139,7 @@
         <div class="donut-chart">
           <svg viewBox="0 0 120 120" class="donut-svg">
             <circle cx="60" cy="60" r="50" fill="none" stroke="#f0f0f0" stroke-width="12"/>
-            <circle cx="60" cy="60" r="50" fill="none" stroke="#2D6A4F" stroke-width="12"
+            <circle cx="60" cy="60" r="50" fill="none" style="stroke: var(--primary-green)" stroke-width="12"
                     [attr.stroke-dasharray]="(inventoryProgress() / 100) * 314 + ' ' + 314"
                     stroke-dashoffset="0" stroke-linecap="round"
                     transform="rotate(-90 60 60)"
@@ -158,7 +158,7 @@
         </div>
         <div class="progress-legend">
           <div class="legend-item">
-            <span class="legend-dot" style="background: #2D6A4F"></span>
+            <span class="legend-dot" style="background: var(--primary-green)"></span>
             Disponible
           </div>
           <div class="legend-item">

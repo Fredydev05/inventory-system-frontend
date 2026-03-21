@@ -3,59 +3,67 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f4efe8;
   position: relative;
   overflow: hidden;
 }
 
+// Fondo con manchas blur tipo aerosol
 .login-background {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   overflow: hidden;
   z-index: 0;
+  pointer-events: none;
 
-  .shape {
+  .blob {
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    animation: float 20s infinite ease-in-out;
 
-    &.shape-1 {
-      width: 400px;
-      height: 400px;
-      top: -100px;
-      left: -100px;
-      animation-delay: 0s;
+    &.blob-1 {
+      width: 560px;
+      height: 560px;
+      top: -160px;
+      left: -120px;
+      background: rgba(205, 168, 150, 0.52);
+      filter: blur(100px);
     }
 
-    &.shape-2 {
+    &.blob-2 {
+      width: 480px;
+      height: 480px;
+      bottom: -130px;
+      right: -80px;
+      background: rgba(162, 193, 175, 0.48);
+      filter: blur(110px);
+    }
+
+    &.blob-3 {
+      width: 380px;
+      height: 380px;
+      top: 38%;
+      left: 55%;
+      background: rgba(188, 175, 215, 0.42);
+      filter: blur(95px);
+    }
+
+    &.blob-4 {
       width: 300px;
       height: 300px;
-      bottom: -50px;
-      right: -50px;
-      animation-delay: 5s;
+      top: 10%;
+      right: 25%;
+      background: rgba(228, 205, 165, 0.5);
+      filter: blur(85px);
     }
 
-    &.shape-3 {
-      width: 200px;
-      height: 200px;
-      top: 50%;
-      right: 20%;
-      animation-delay: 10s;
+    &.blob-5 {
+      width: 250px;
+      height: 250px;
+      bottom: 20%;
+      left: 20%;
+      background: rgba(195, 175, 200, 0.38);
+      filter: blur(90px);
     }
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -30px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
   }
 }
 
@@ -63,139 +71,131 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 420px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 48px 40px;
-  animation: slideUp 0.6s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  max-width: 400px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.09), 0 1px 4px rgba(0, 0, 0, 0.05);
+  padding: 48px 40px 40px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .login-header {
-  text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 
   .logo {
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 
     .logo-icon {
-      font-size: 56px;
-      color: #667eea;
+      font-size: 32px;
+      color: #333;
     }
   }
 
   h1 {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
     color: #1a1a1a;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
   }
 
   p {
-    color: #8c8c8c;
-    font-size: 14px;
+    color: #999;
+    font-size: 13px;
+    margin: 0;
   }
 }
 
 .login-form {
   nz-form-item {
-    margin-bottom: 24px;
-
-    &:last-of-type {
-      margin-bottom: 32px;
-    }
+    margin-bottom: 18px;
   }
 
-  nz-input-group {
-    input {
-      height: 44px;
-      border-radius: 8px;
-      font-size: 15px;
+  .form-item-row {
+    margin-bottom: 24px;
+  }
 
-      &::placeholder {
-        color: #bfbfbf;
-      }
-    }
+  // Inputs menos redondeados
+  :ng-deep .ant-input-affix-wrapper,
+  :ng-deep .ant-input {
+    border-radius: 3px !important;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  :ng-deep .ant-input-affix-wrapper {
+    height: 40px;
+    line-height: 40px;
   }
 
   .password-toggle {
     cursor: pointer;
-    color: #8c8c8c;
-    transition: color 0.3s;
+    color: #aaa;
+    transition: color 0.2s;
 
     &:hover {
-      color: #667eea;
+      color: #333;
     }
   }
 
   label {
-    font-size: 14px;
+    font-size: 13px;
+    color: #555;
   }
 
   .login-form-forgot {
     float: right;
-    color: #667eea;
     font-size: 13px;
+    color: #666;
     text-decoration: none;
-    transition: color 0.3s;
 
     &:hover {
-      color: #764ba2;
+      color: #1a1a1a;
+      text-decoration: underline;
     }
   }
 
-  button[nz-button] {
-    height: 44px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+  .submit-btn {
+    height: 40px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
+    :ng-deep &.ant-btn-primary {
+      background-color: #2c3e50;
+      border-color: #2c3e50;
 
-    &:active {
-      transform: translateY(0);
+      &:hover {
+        background-color: #3d5166;
+        border-color: #3d5166;
+      }
+
+      &:active {
+        background-color: #1e2d3d;
+        border-color: #1e2d3d;
+      }
     }
   }
 }
 
 .login-footer {
-  margin-top: 32px;
-  text-align: center;
-  padding-top: 24px;
+  margin-top: 28px;
+  padding-top: 20px;
   border-top: 1px solid #f0f0f0;
+  text-align: center;
 
   p {
-    font-size: 12px;
-    color: #8c8c8c;
+    font-size: 11px;
+    color: #bfbfbf;
     margin: 0;
   }
 }
 
-// Responsive
 @media (max-width: 576px) {
   .login-card {
     margin: 20px;
-    padding: 32px 24px;
-  }
-
-  .login-header h1 {
-    font-size: 24px;
+    padding: 32px 24px 28px;
   }
 }

@@ -46,9 +46,9 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.loading.set(true);
-      const { email, password } = this.loginForm.value;
+      const { email, password, remember } = this.loginForm.value;
 
-      this.authService.login({ email, password }).subscribe({
+      this.authService.login({ email, password }, remember).subscribe({
         next: () => {
           this.message.success('¡Bienvenido! Inicio de sesión exitoso');
           this.router.navigate(['/dashboard']);

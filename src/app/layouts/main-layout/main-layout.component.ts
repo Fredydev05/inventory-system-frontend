@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -37,6 +37,8 @@ interface MenuItem {
 export class MainLayoutComponent {
   isCollapsed = signal(false);
 
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+
   menuItems: MenuItem[] = [
     { icon: 'dashboard', title: 'Dashboard', route: '/dashboard' },
     { icon: 'shopping', title: 'Productos', route: '/products', badge: 124 },
@@ -56,6 +58,17 @@ export class MainLayoutComponent {
     public authService: AuthService,
     private router: Router
   ) {}
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent): void {
+    if (event.ctrlKey && event.key === 'f') {
+      event.preventDefault();
+      this.searchInput?.nativeElement?.focus();
+    }
+    if (event.key === 'Escape') {
+      this.searchInput?.nativeElement?.blur();
+    }
+  }
 
   isActiveRoute(route: string): boolean {
     return this.router.url === route || this.router.url.startsWith(route + '/');

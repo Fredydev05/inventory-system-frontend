@@ -10,15 +10,21 @@ export class StorageService {
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
 
-  setToken(token: string): void {
+  setToken(token: string, remember: boolean = true): void {
     if (this.isBrowser) {
-      localStorage.setItem(this.TOKEN_KEY, token);
+      if (remember) {
+        localStorage.setItem(this.TOKEN_KEY, token);
+        sessionStorage.removeItem(this.TOKEN_KEY);
+      } else {
+        sessionStorage.setItem(this.TOKEN_KEY, token);
+        localStorage.removeItem(this.TOKEN_KEY);
+      }
     }
   }
 
   getToken(): string | null {
     if (this.isBrowser) {
-      return localStorage.getItem(this.TOKEN_KEY);
+      return localStorage.getItem(this.TOKEN_KEY) ?? sessionStorage.getItem(this.TOKEN_KEY);
     }
     return null;
   }
@@ -26,6 +32,7 @@ export class StorageService {
   removeToken(): void {
     if (this.isBrowser) {
       localStorage.removeItem(this.TOKEN_KEY);
+      sessionStorage.removeItem(this.TOKEN_KEY);
     }
   }
 
@@ -52,6 +59,7 @@ export class StorageService {
   clear(): void {
     if (this.isBrowser) {
       localStorage.clear();
+      sessionStorage.clear();
     }
   }
 }

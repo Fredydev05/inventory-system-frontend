@@ -22,7 +22,7 @@ import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
     NzCardComponent,
     NzSkeletonModule
   ],
-  templateUrl: './invoices-list.component.html',
+  template: `<h1>Invoices</h1>`,
   styles: [`/* AG-Grid styles loaded globally */`]
 })
 export class InvoicesListComponent implements OnInit {
