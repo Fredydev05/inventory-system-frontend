@@ -5,61 +5,72 @@
 // ========== SIDEBAR ==========
 .sidebar {
   background: #ffffff;
-  border-right: 1px solid #f0f0f0;
+  border-right: 1px solid #eaeceb;
   z-index: 10;
   position: relative;
-  display: flex;
-  flex-direction: column;
 
   ::ng-deep .ant-layout-sider-children {
     display: flex;
     flex-direction: column;
     height: 100%;
+    // Clip the selected-item background that bleeds outside the sider.
+    // overflow-x: clip (unlike hidden) does NOT create a new scroll container,
+    // so Ant Design's hover tooltips on the right side still render correctly.
+    overflow-x: clip;
   }
 
   .logo {
-    height: 72px;
+    height: 64px;
     display: flex;
     align-items: center;
-    padding: 0 24px;
-    gap: 12px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 0 20px;
+    gap: 10px;
+    border-bottom: 1px solid #eaeceb;
+    transition: padding 0.25s ease;
+
+    &.collapsed {
+      justify-content: center;
+      padding: 0;
+    }
 
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--primary-green, #2D6A4F);
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: var(--radius-md);
+      background: var(--primary-green);
       display: flex;
       align-items: center;
       justify-content: center;
 
       span[nz-icon] {
-        font-size: 20px;
+        font-size: 18px;
         color: white;
       }
     }
 
     .logo-text {
-      font-size: 20px;
+      font-size: 17px;
       font-weight: 700;
-      color: var(--text-primary, #1A1A2E);
-      letter-spacing: -0.3px;
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 
   .menu-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    color: var(--text-muted, #9CA3AF);
-    padding: 24px 28px 8px;
-    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    padding: 20px 20px 6px;
+    letter-spacing: 1.4px;
     text-transform: uppercase;
   }
 
   .general-menu {
     margin-top: auto;
-    padding-bottom: 16px;
+    padding-bottom: 12px;
   }
 
   ::ng-deep {
@@ -72,63 +83,99 @@
     .ant-menu-item {
       display: flex;
       align-items: center;
-      margin: 2px 12px;
-      padding: 0 16px !important;
-      border-radius: 12px;
-      height: 44px;
-      line-height: 44px;
-      color: var(--text-secondary, #6B7280);
+      // Use padding + box-sizing to create inset look without margin tricks
+      margin: 2px 0;
+      padding: 0 14px !important;
+      // Inset the clickable area so the background doesn't reach the sider edge
+      box-shadow: inset 10px 0 0 0 transparent, inset -10px 0 0 0 transparent;
+      border-radius: 0;
+      height: 42px;
+      line-height: 42px;
+      color: var(--text-secondary);
       font-weight: 500;
-      font-size: 14px;
-      transition: all 0.2s ease;
+      font-size: 13.5px;
+      transition: background 0.18s ease, color 0.18s ease;
+      position: relative;
+
+      // Remove default right-border indicator
+      &::after { display: none !important; }
+
+      // Inset visual highlight using ::before pseudo-element
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 2px 10px;
+        border-radius: var(--radius-md);
+        background: transparent;
+        transition: background 0.18s ease;
+        z-index: 0;
+      }
+
+      // Keep content above the ::before layer
+      * { position: relative; z-index: 1; }
+
+      &:hover::before {
+        background: var(--primary-green-pale);
+      }
 
       &:hover {
-        background: var(--primary-green-pale, #D8F3DC);
-        color: var(--primary-green, #2D6A4F);
+        color: var(--primary-green);
+        background: transparent !important;
       }
 
       &.ant-menu-item-selected {
-        background: var(--primary-green, #2D6A4F);
+        background: transparent !important;
         color: white;
         font-weight: 600;
 
-        &::after {
-          display: none;
+        &::before {
+          background: var(--primary-green);
         }
 
-        span[nz-icon] {
+        span[nz-icon] { color: white; }
+
+        .menu-badge ::ng-deep .ant-badge-count {
+          background: rgba(255, 255, 255, 0.25);
           color: white;
-        }
-
-        .menu-badge {
-          ::ng-deep .ant-badge-count {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            box-shadow: none;
-          }
+          box-shadow: none;
         }
       }
 
       span[nz-icon] {
-        font-size: 18px;
-        margin-right: 12px;
-        transition: color 0.2s;
+        font-size: 16px;
+        margin-right: 10px;
+        flex-shrink: 0;
+        transition: color 0.18s;
       }
 
       .menu-badge {
         margin-left: auto;
 
         ::ng-deep .ant-badge-count {
-          font-size: 11px;
-          height: 20px;
-          min-width: 20px;
-          line-height: 20px;
-          border-radius: 6px;
-          background: var(--primary-green-light, #95D5B2);
-          color: var(--primary-green-dark, #1B4332);
+          font-size: 10px;
+          height: 18px;
+          min-width: 18px;
+          line-height: 18px;
+          border-radius: 3px;
+          background: var(--primary-green-light);
+          color: var(--primary-green);
           box-shadow: none;
           font-weight: 600;
         }
+      }
+    }
+
+    // Collapsed — let Ant Design center icons, only fix margin/radius
+    .ant-menu-inline-collapsed > .ant-menu-item {
+      padding: 0 calc(50% - 12px) !important;
+
+      &::before {
+        inset: 2px 6px;
+      }
+
+      span[nz-icon] {
+        margin-right: 0;
+        font-size: 18px;
       }
     }
   }
@@ -136,106 +183,128 @@
 
 // ========== INNER LAYOUT ==========
 .inner-layout {
-  background: var(--bg-main, #F5F5F0);
+  background: var(--bg-main);
+  min-width: 0;
 }
 
 // ========== HEADER ==========
 .header {
   background: white;
-  padding: 0 28px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   z-index: 9;
-  height: 72px;
+  height: 64px;
 
   .header-left {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 20px;
 
     .trigger {
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
-      transition: color 0.2s;
-      padding: 8px;
-      border-radius: 8px;
-      color: var(--text-secondary, #6B7280);
+      padding: 7px 9px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
 
       &:hover {
-        color: var(--primary-green, #2D6A4F);
-        background: var(--primary-green-pale, #D8F3DC);
+        color: var(--primary-green);
+        background: var(--primary-green-pale);
       }
     }
+  }
+
+  // ---- Search: takes available space, centered, fixed max-width ----
+  .header-center {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
 
     .search-box {
       display: flex;
       align-items: center;
-      background: #F5F5F0;
-      border-radius: 12px;
-      padding: 8px 16px;
-      gap: 10px;
-      min-width: 280px;
-      border: 1px solid transparent;
-      transition: all 0.2s;
+      background: var(--bg-main);
+      border-radius: var(--radius-sm);
+      border: 1px solid #e5e7eb;
+      height: 36px;
+      // Fixed width — never grows beyond 360px, never overflows
+      width: 360px;
+      max-width: 100%;
+      // Clip children so Ctrl+F badge stays inside
+      overflow: hidden;
+      padding: 0;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
 
       &:focus-within {
-        border-color: var(--primary-green, #2D6A4F);
+        border-color: var(--primary-green);
         background: white;
-        box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        box-shadow: 0 0 0 3px rgba(129, 144, 103, 0.18);
       }
 
+      // Icon
       span[nz-icon] {
-        font-size: 16px;
-        color: var(--text-muted, #9CA3AF);
+        font-size: 14px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        padding-left: 12px;
       }
 
       .search-input {
         border: none;
         outline: none;
         background: transparent;
-        font-size: 14px;
-        color: var(--text-primary, #1A1A2E);
+        font-size: 13px;
+        color: var(--text-primary);
+        // Takes all available space between icon and shortcut badge
         flex: 1;
+        min-width: 0;
+        padding: 0 8px;
+        height: 100%;
         font-family: 'Inter', sans-serif;
 
-        &::placeholder {
-          color: var(--text-muted, #9CA3AF);
-        }
+        &::placeholder { color: var(--text-muted); }
       }
 
       .search-shortcut {
-        font-size: 11px;
-        color: var(--text-muted, #9CA3AF);
+        flex-shrink: 0;
+        font-size: 10px;
+        color: var(--text-muted);
         background: white;
-        padding: 2px 8px;
-        border-radius: 4px;
+        padding: 2px 6px;
+        border-radius: 3px;
         border: 1px solid #e5e7eb;
         font-weight: 500;
+        white-space: nowrap;
+        margin-right: 8px;
+        line-height: 1.6;
       }
     }
   }
 
   .header-right {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 14px;
 
     .header-icon-wrapper {
       cursor: pointer;
 
       .header-icon {
-        font-size: 20px;
-        color: var(--text-secondary, #6B7280);
-        transition: color 0.2s;
-        padding: 8px;
-        border-radius: 8px;
+        font-size: 18px;
+        color: var(--text-secondary);
+        padding: 7px;
+        border-radius: var(--radius-sm);
         display: flex;
 
         &:hover {
-          color: var(--primary-green, #2D6A4F);
-          background: var(--primary-green-pale, #D8F3DC);
+          color: var(--primary-green);
+          background: var(--primary-green-pale);
         }
       }
     }
@@ -243,20 +312,18 @@
     .user-menu {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      padding: 6px 12px 6px 6px;
-      border-radius: 12px;
-      transition: background 0.2s;
-      margin-left: 4px;
+      padding: 5px 10px 5px 5px;
+      border-radius: var(--radius-sm);
+      transition: background 0.18s;
 
-      &:hover {
-        background: #F5F5F0;
-      }
+      &:hover { background: var(--primary-green-pale); }
 
       .user-avatar {
-        background: var(--primary-green, #2D6A4F);
+        background: var(--primary-green);
         color: white;
+        flex-shrink: 0;
       }
 
       .user-info {
@@ -267,12 +334,12 @@
         .user-name {
           font-weight: 600;
           font-size: 13px;
-          color: var(--text-primary, #1A1A2E);
+          color: var(--text-primary);
         }
 
         .user-email {
           font-size: 11px;
-          color: var(--text-muted, #9CA3AF);
+          color: var(--text-muted);
         }
       }
     }
@@ -283,30 +350,28 @@
 .content {
   padding: 24px;
   overflow-y: auto;
-  height: calc(100vh - 72px);
+  height: calc(100vh - 64px);
 }
 
 // ========== RESPONSIVE ==========
 @media (max-width: 768px) {
   .header {
-    padding: 0 16px;
+    padding: 0 12px;
 
-    .header-left {
-      .search-box {
-        display: none;
-      }
+    .header-center .search-box {
+      width: 200px;
+      .search-shortcut { display: none; }
     }
 
     .header-right {
-      gap: 12px;
-
-      .user-info {
-        display: none;
-      }
+      gap: 8px;
+      .user-info { display: none; }
     }
   }
 
-  .content {
-    padding: 16px;
-  }
+  .content { padding: 16px; }
+}
+
+@media (max-width: 480px) {
+  .header-center { display: none !important; }
 }

@@ -2,7 +2,7 @@
   <div class="login-card">
     <div class="login-header">
       <div class="logo">
-        <span nz-icon nzType="shop" nzTheme="twotone" class="logo-icon"></span>
+        <span nz-icon nzType="shop" nzTheme="outline" class="logo-icon"></span>
       </div>
       <h1>Sistema de Inventario</h1>
       <p>Ingresa tus credenciales para continuar</p>
@@ -45,7 +45,7 @@
         </nz-form-control>
       </nz-form-item>
 
-      <nz-form-item>
+      <nz-form-item class="form-item-row">
         <nz-form-control>
           <label nz-checkbox formControlName="remember">
             <span>Recordarme</span>
@@ -58,9 +58,9 @@
         nz-button
         nzType="primary"
         nzBlock
-        nzSize="large"
         [nzLoading]="loading()"
         type="submit"
+        class="submit-btn"
       >
         Iniciar Sesión
       </button>
@@ -72,8 +72,10 @@
   </div>
 
   <div class="login-background">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="blob blob-5"></div>
   </div>
 </div>

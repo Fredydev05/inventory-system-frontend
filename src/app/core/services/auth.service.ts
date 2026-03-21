@@ -23,11 +23,11 @@ export class AuthService {
     this.checkAuth();
   }
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
+  login(credentials: LoginRequest, remember: boolean = true): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/auth/login`, credentials)
       .pipe(
         tap(response => {
-          this.storage.setToken(response.access_token);
+          this.storage.setToken(response.access_token, remember);
           this.getCurrentUser();
         })
       );
@@ -80,7 +80,7 @@ export class AuthService {
     this.storage.clear();
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   isAdmin(): boolean {
