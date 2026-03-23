@@ -4,10 +4,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import { ProductActionsCellComponent } from './helper/product-actions-cell.component';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -27,10 +28,13 @@ import { ProductService } from '../../services/product.service';
   imports: [
     CommonModule,
     AgGridAngular,
+    ProductActionsCellComponent,
     NzButtonModule,
+    NzDropDownModule,
     NzInputModule,
     NzIconModule,
     NzTagModule,
+    FormsModule,
     ReactiveFormsModule,
     NzFormModule,
     NzModalModule,
@@ -50,6 +54,16 @@ export class ProductsListComponent implements OnInit {
   isCreateModalOpen = signal(false);
   saving = signal(false);
   categories = signal<Category[]>([]);
+  columnOptions = [
+    { key: 'code', label: 'Codigo', visible: true },
+    { key: 'name', label: 'Producto', visible: true },
+    { key: 'category', label: 'Categoria', visible: true },
+    { key: 'current_stock', label: 'Stock Actual', visible: true },
+    { key: 'minimum_stock', label: 'Stock Min.', visible: true },
+    { key: 'sale_price', label: 'Precio Venta', visible: true },
+    { key: 'purchase_price', label: 'Costo', visible: true },
+    { key: 'is_active', label: 'Estado', visible: true }
+  ];
 
   private gridApi?: GridApi<Product>;
   private fb = inject(NonNullableFormBuilder);
@@ -85,6 +99,7 @@ export class ProductsListComponent implements OnInit {
       tooltipField: 'name'
     },
     {
+      colId: 'category',
       headerName: 'Categoria',
       width: 170,
       filter: 'agTextColumnFilter',
@@ -132,7 +147,7 @@ export class ProductsListComponent implements OnInit {
     {
       field: 'is_active',
       headerName: 'Estado',
-      width: 120,
+      width: 80,
       cellRenderer: (params: ICellRendererParams<Product>) => {
         const isActive = Boolean(params.value);
         return `
@@ -232,10 +247,45 @@ export class ProductsListComponent implements OnInit {
 
   onGridReady(params: GridReadyEvent<Product>): void {
     this.gridApi = params.api;
+    this.columnOptions.forEach(column => {
+      this.gridApi?.setColumnsVisible([column.key], column.visible);
+    });
   }
 
   exportToExcel(): void {
-    this.message.info('Funcion de exportacion en desarrollo');
+    if (!this.gridApi) {
+      this.message.warning('La tabla todavia no esta lista para exportar');
+      return;
+    }
+
+    this.gridApi.exportDataAsCsv({
+      fileName: 'productos.csv',
+      allColumns: true
+    });
+
+    this.message.success('Exportacion CSV iniciada');
+  }
+
+  toggleColumnVisibility(option: { key: string; label: string; visible: boolean }): void {
+    if (!this.gridApi) {
+      this.message.warning('La tabla todavia no esta lista');
+      return;
+    }
+
+    option.visible = !option.visible;
+    this.gridApi.setColumnsVisible([option.key], option.visible);
+  }
+
+  resetColumns(): void {
+    if (!this.gridApi) {
+      this.message.warning('La tabla todavia no esta lista');
+      return;
+    }
+
+    this.columnOptions.forEach(option => {
+      option.visible = true;
+      this.gridApi?.setColumnsVisible([option.key], true);
+    });
   }
 
   addProduct(): void {
