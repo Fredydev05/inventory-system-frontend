@@ -98,6 +98,46 @@
   background: #ffffff;
 }
 
+.columns-menu {
+  min-width: 220px;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.columns-menu-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.columns-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.reset-columns-btn {
+  padding: 0;
+  height: auto;
+  font-size: 12px;
+}
+
+.column-option {
+  display: flex;
+  margin-bottom: 8px;
+  color: #1f2937;
+}
+
+.column-option:last-child {
+  margin-bottom: 0;
+}
+
 .products-grid {
   min-width: 980px;
   height: 600px;
