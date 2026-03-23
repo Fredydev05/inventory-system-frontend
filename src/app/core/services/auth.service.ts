@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, switchMap, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, User } from '../models';
 import { StorageService } from './storage.service';
 import { environment } from '../../../environments/environment';
@@ -26,9 +26,16 @@ export class AuthService {
   login(credentials: LoginRequest, remember: boolean = true): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/auth/login`, credentials)
       .pipe(
-        tap(response => {
+        switchMap(response => {
           this.storage.setToken(response.access_token, remember);
-          this.getCurrentUser();
+          return this.getCurrentUser().pipe(
+            tap(user => {
+              this.currentUser.set(user);
+              this.isAuthenticated.set(true);
+              this.storage.setUser(user);
+            }),
+            map(() => response)
+          );
         })
       );
   }
@@ -44,17 +51,14 @@ export class AuthService {
     });
   }
 
-  getCurrentUser(): void {
-    this.http.post<User>(`${this.API_URL}/auth/me`, {}).subscribe({
-      next: (user) => {
-        this.currentUser.set(user);
-        this.isAuthenticated.set(true);
-        this.storage.setUser(user);
-      },
-      error: () => {
-        this.clearSession();
-      }
-    });
+  getCurrentUser(): Observable<User> {
+    return this.http.post<User>(`${this.API_URL}/auth/me`, {}).pipe(
+      tap({
+        error: () => {
+          this.clearSession();
+        }
+      })
+    );
   }
 
   refreshToken(): Observable<LoginResponse> {
