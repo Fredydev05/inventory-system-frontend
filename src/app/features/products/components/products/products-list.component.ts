@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
+import { ProductActionsCellComponent } from './helper/product-actions-cell.component';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -149,43 +150,11 @@ export class ProductsListComponent implements OnInit {
     {
       colId: 'actions',
       headerName: 'Acciones',
-      width: 150,
+      maxWidth: 90,
       sortable: false,
       filter: false,
       pinned: 'right',
-      onCellClicked: params => {
-        if (!params.data) {
-          return;
-        }
-
-        const target = params.event?.target as HTMLElement | null;
-        const action = target?.closest('[data-action]')?.getAttribute('data-action');
-
-        if (action === 'delete') {
-          this.deleteProduct(params.data);
-          return;
-        }
-
-        if (action === 'edit') {
-          this.editProduct(params.data);
-        }
-      },
-      cellRenderer: () => `
-        <button
-          type="button"
-          class="grid-action-btn warning"
-          data-action="edit"
-        >
-          Editar
-        </button>
-        <button
-          type="button"
-          class="grid-action-btn danger"
-          data-action="delete"
-        >
-          Eliminar
-        </button>
-      `
+      cellRenderer: ProductActionsCellComponent
     }
   ];
 
@@ -200,7 +169,11 @@ export class ProductsListComponent implements OnInit {
     pagination: true,
     paginationPageSize: 20,
     paginationPageSizeSelector: [10, 20, 50, 100],
-    animateRows: true
+    animateRows: true,
+    context: {
+      onEdit: (product: Product) => this.editProduct(product),
+      onDelete: (product: Product) => this.deleteProduct(product)
+    }
   };
 
   constructor(
