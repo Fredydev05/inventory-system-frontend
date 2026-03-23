@@ -32,17 +32,17 @@
 
     <div class="table-layout" [class.with-details]="!!selectedProduct()">
       <div class="table-panel">
-   
-
-        <div class="table-scroll">
-          <ag-grid-angular
-            class="ag-theme-alpine products-grid"
-            [rowData]="rowData()"
-            [columnDefs]="colDefs"
-            [gridOptions]="gridOptions"
-            (gridReady)="onGridReady($event)"
-          />
-        </div>
+        <nz-spin [nzSpinning]="loading()" nzTip="Cargando productos...">
+          <div class="table-scroll">
+            <ag-grid-angular
+              class="ag-theme-alpine products-grid"
+              [rowData]="rowData()"
+              [columnDefs]="colDefs"
+              [gridOptions]="gridOptions"
+              (gridReady)="onGridReady($event)"
+            />
+          </div>
+        </nz-spin>
       </div>
 
     </div>

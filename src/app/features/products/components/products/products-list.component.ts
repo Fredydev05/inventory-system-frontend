@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -13,6 +14,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { Category, Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
@@ -33,7 +35,8 @@ import { ProductService } from '../../services/product.service';
     NzModalModule,
     NzInputNumberModule,
     NzSelectModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzSpinModule
   ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss'
@@ -210,8 +213,26 @@ export class ProductsListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
-    this.loadCategories();
+    this.loadInitialData();
+  }
+
+  loadInitialData(): void {
+    this.loading.set(true);
+    forkJoin({
+      products: this.productService.getProducts(),
+      categories: this.productService.getCategories()
+    }).subscribe({
+      next: ({ products, categories }) => {
+        this.rowData.set(products);
+        this.selectedProduct.set(products[0] ?? null);
+        this.categories.set(categories);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.message.error('Error al cargar datos de productos');
+        this.loading.set(false);
+      }
+    });
   }
 
   loadProducts(): void {
@@ -268,7 +289,7 @@ export class ProductsListComponent implements OnInit {
   deleteProduct(product: Product): void {
     this.modal.confirm({
       nzTitle: 'Eliminar producto',
-      nzContent: `Estas seguro de que quieres eliminar el registro "${product.name}"? Esta accion no se puede deshacer.`,
+      nzContent: `Estas seguro de que quieres eliminar el registro "${product.name}"? <br>Esta accion no se puede deshacer.`,
       nzOkText: 'Eliminar',
       nzOkDanger: true,
       nzCancelText: 'Cancelar',
