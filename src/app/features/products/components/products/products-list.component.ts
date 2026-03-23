@@ -14,8 +14,8 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { Category, Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
@@ -37,7 +37,7 @@ import { ProductService } from '../../services/product.service';
     NzInputNumberModule,
     NzSelectModule,
     NzCheckboxModule,
-    NzSpinModule
+    NzSkeletonModule
   ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss'

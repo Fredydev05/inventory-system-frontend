@@ -32,7 +32,15 @@
 
     <div class="table-layout" [class.with-details]="!!selectedProduct()">
       <div class="table-panel">
-        <nz-spin [nzSpinning]="loading()" nzTip="Cargando productos...">
+        <ng-container *ngIf="loading(); else productsGrid">
+          <div class="table-scroll">
+            <div class="table-skeleton">
+              <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 10 }"></nz-skeleton>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #productsGrid>
           <div class="table-scroll">
             <ag-grid-angular
               class="ag-theme-alpine products-grid"
@@ -42,7 +50,7 @@
               (gridReady)="onGridReady($event)"
             />
           </div>
-        </nz-spin>
+        </ng-template>
       </div>
 
     </div>
