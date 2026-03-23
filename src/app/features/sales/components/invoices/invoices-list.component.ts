@@ -14,12 +14,13 @@ import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 @Component({
   selector: 'app-invoices-list',
   standalone: true,
+  host: { ngSkipHydration: 'true' },
   imports: [
     CommonModule,
-    AgGridAngular,
+    //AgGridAngular,
     NzButtonModule,
     NzIconModule,
-    NzCardComponent,
+    //NzCardComponent,
     NzSkeletonModule
   ],
   template: `<h1>Invoices</h1>`,

@@ -50,6 +50,7 @@ export class LoginComponent {
 
       this.authService.login({ email, password }, remember).subscribe({
         next: () => {
+          this.loading.set(false);
           this.message.success('¡Bienvenido! Inicio de sesión exitoso');
           this.router.navigate(['/dashboard']);
         },

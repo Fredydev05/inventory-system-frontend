@@ -20,6 +20,7 @@ import { ProductService } from '../../services/product.service';
 @Component({
   selector: 'app-products-list',
   standalone: true,
+  host: { ngSkipHydration: 'true' },
   imports: [
     CommonModule,
     AgGridAngular,
@@ -194,7 +195,7 @@ export class ProductsListComponent implements OnInit {
       sortable: true,
       resizable: true,
       filter: true,
-      minWidth: 110
+      minWidth: 188
     },
     pagination: true,
     paginationPageSize: 20,

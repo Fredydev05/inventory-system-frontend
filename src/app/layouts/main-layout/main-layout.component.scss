@@ -83,9 +83,6 @@
     .ant-menu-item {
       display: flex;
       align-items: center;
-      // Use padding + box-sizing to create inset look without margin tricks
-      margin: 2px 0;
-      padding: 0 14px !important;
       // Inset the clickable area so the background doesn't reach the sider edge
       box-shadow: inset 10px 0 0 0 transparent, inset -10px 0 0 0 transparent;
       border-radius: 0;
@@ -112,7 +109,7 @@
       }
 
       // Keep content above the ::before layer
-      * { position: relative; z-index: 1; }
+      * { position: relative; z-index: 1; margin: 0;}
 
       &:hover::before {
         background: var(--primary-green-pale);
@@ -129,7 +126,7 @@
         font-weight: 600;
 
         &::before {
-          background: var(--primary-green);
+          background: var(--primary-green);;
         }
 
         span[nz-icon] { color: white; }
