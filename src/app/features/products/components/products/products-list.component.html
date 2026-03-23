@@ -48,3 +48,119 @@
     </div>
   </div>
 </div>
+
+
+
+
+<nz-modal
+  [nzVisible]="isCreateModalOpen()"
+  [nzTitle]="editingProduct() ? 'Editar Producto' : 'Nuevo Producto'"
+  nzOkText="Guardar"
+  nzCancelText="Cancelar"
+  [nzOkLoading]="saving()"
+  (nzOnCancel)="handleCreateCancel()"
+  (nzOnOk)="submitProduct()"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="productForm">
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Nombre</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input formControlName="name" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Codigo</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input formControlName="code" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Categoria</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-select formControlName="category_id" nzPlaceHolder="Selecciona una categoria">
+                <nz-option
+                  *ngFor="let category of categories()"
+                  [nzValue]="category.id"
+                  [nzLabel]="category.name"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Costo</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-input-number
+                formControlName="purchase_price"
+                [nzMin]="0"
+                [nzStep]="0.01"
+                style="width: 100%;"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Precio Venta</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-input-number
+                formControlName="sale_price"
+                [nzMin]="0"
+                [nzStep]="0.01"
+                style="width: 100%;"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Stock Actual</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-input-number
+                formControlName="current_stock"
+                [nzMin]="0"
+                style="width: 100%;"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" nzRequired>Stock Minimo</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-input-number
+                formControlName="minimum_stock"
+                [nzMin]="0"
+                style="width: 100%;"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzXs]="24" [nzSm]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24">&nbsp;</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <label nz-checkbox formControlName="is_active">Activo</label>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>

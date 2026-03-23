@@ -155,6 +155,42 @@
   }
 }
 
+:host ::ng-deep .grid-action-btn {
+  border: 1px solid #ffd591;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-right: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  background: #ffffff;
+  color: #262626;
+  transition: all 0.2s ease;
+}
+
+:host ::ng-deep .grid-action-btn.warning {
+  background: #fff7e6;
+  border-color: #ffd591;
+  color: #ad6800;
+}
+
+:host ::ng-deep .grid-action-btn.warning:hover {
+  background: #ffe7ba;
+  border-color: #ffc069;
+}
+
+:host ::ng-deep .grid-action-btn.danger {
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+  color: #ffffff;
+}
+
+:host ::ng-deep .grid-action-btn.danger:hover {
+  background: #cf1322;
+  border-color: #cf1322;
+}
+
 .details-panel {
   background: #fcfdfb;
   border: 1px solid #e5efe8;

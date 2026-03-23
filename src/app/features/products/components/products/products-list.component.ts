@@ -1,13 +1,20 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Product } from '../../models/product.model';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { Category, Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 
 @Component({
@@ -20,7 +27,13 @@ import { ProductService } from '../../services/product.service';
     NzButtonModule,
     NzInputModule,
     NzIconModule,
-    NzTagModule
+    NzTagModule,
+    ReactiveFormsModule,
+    NzFormModule,
+    NzModalModule,
+    NzInputNumberModule,
+    NzSelectModule,
+    NzCheckboxModule
   ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss'
@@ -29,8 +42,24 @@ export class ProductsListComponent implements OnInit {
   loading = signal(false);
   rowData = signal<Product[]>([]);
   selectedProduct = signal<Product | null>(null);
+  editingProduct = signal<Product | null>(null);
+  isCreateModalOpen = signal(false);
+  saving = signal(false);
+  categories = signal<Category[]>([]);
 
   private gridApi?: GridApi<Product>;
+  private fb = inject(NonNullableFormBuilder);
+
+  productForm = this.fb.group({
+    code: ['', [Validators.required]],
+    name: ['', [Validators.required]],
+    category_id: [0, [Validators.required, Validators.min(1)]],
+    purchase_price: [0, [Validators.required, Validators.min(0)]],
+    sale_price: [0, [Validators.required, Validators.min(0)]],
+    current_stock: [0, [Validators.required, Validators.min(0)]],
+    minimum_stock: [0, [Validators.required, Validators.min(0)]],
+    is_active: [true]
+  });
 
   colDefs: ColDef<Product>[] = [
     {
@@ -116,8 +145,48 @@ export class ProductsListComponent implements OnInit {
           </span>
         `;
       }
+    },
+    {
+      colId: 'actions',
+      headerName: 'Acciones',
+      width: 150,
+      sortable: false,
+      filter: false,
+      pinned: 'right',
+      onCellClicked: params => {
+        if (!params.data) {
+          return;
+        }
+
+        const target = params.event?.target as HTMLElement | null;
+        const action = target?.closest('[data-action]')?.getAttribute('data-action');
+
+        if (action === 'delete') {
+          this.deleteProduct(params.data);
+          return;
+        }
+
+        if (action === 'edit') {
+          this.editProduct(params.data);
+        }
+      },
+      cellRenderer: () => `
+        <button
+          type="button"
+          class="grid-action-btn warning"
+          data-action="edit"
+        >
+          Editar
+        </button>
+        <button
+          type="button"
+          class="grid-action-btn danger"
+          data-action="delete"
+        >
+          Eliminar
+        </button>
+      `
     }
-    
   ];
 
   gridOptions: GridOptions<Product> = {
@@ -131,17 +200,18 @@ export class ProductsListComponent implements OnInit {
     pagination: true,
     paginationPageSize: 20,
     paginationPageSizeSelector: [10, 20, 50, 100],
-    animateRows: true,
-    
+    animateRows: true
   };
 
   constructor(
     private productService: ProductService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private modal: NzModalService
   ) {}
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadCategories();
   }
 
   loadProducts(): void {
@@ -159,6 +229,13 @@ export class ProductsListComponent implements OnInit {
     });
   }
 
+  loadCategories(): void {
+    this.productService.getCategories().subscribe({
+      next: categories => this.categories.set(categories),
+      error: () => this.message.error('Error al cargar categorias')
+    });
+  }
+
   onGridReady(params: GridReadyEvent<Product>): void {
     this.gridApi = params.api;
   }
@@ -168,7 +245,111 @@ export class ProductsListComponent implements OnInit {
   }
 
   addProduct(): void {
-    this.message.info('Funcion de agregar producto en desarrollo');
+    this.editingProduct.set(null);
+    this.resetProductForm();
+    this.isCreateModalOpen.set(true);
+  }
+
+  editProduct(product: Product): void {
+    this.editingProduct.set(product);
+    this.productForm.reset({
+      code: product.code,
+      name: product.name,
+      category_id: product.category_id,
+      purchase_price: product.purchase_price,
+      sale_price: product.sale_price,
+      current_stock: product.current_stock,
+      minimum_stock: product.minimum_stock,
+      is_active: product.is_active
+    });
+    this.isCreateModalOpen.set(true);
+  }
+
+  deleteProduct(product: Product): void {
+    this.modal.confirm({
+      nzTitle: 'Eliminar producto',
+      nzContent: `Estas seguro de que quieres eliminar el registro "${product.name}"? Esta accion no se puede deshacer.`,
+      nzOkText: 'Eliminar',
+      nzOkDanger: true,
+      nzCancelText: 'Cancelar',
+      nzOnOk: () => {
+        this.productService.deleteProduct(product.id).subscribe({
+          next: () => {
+            this.message.success('Producto eliminado correctamente');
+
+            if (this.editingProduct()?.id === product.id) {
+              this.isCreateModalOpen.set(false);
+              this.editingProduct.set(null);
+              this.resetProductForm();
+            }
+
+            if (this.selectedProduct()?.id === product.id) {
+              this.selectedProduct.set(null);
+            }
+
+            this.loadProducts();
+          },
+          error: (error: HttpErrorResponse) => {
+            const apiMessage = error.error?.message;
+            this.message.error(apiMessage || 'Error al eliminar el producto');
+          }
+        });
+      }
+    });
+  }
+
+  handleCreateCancel(): void {
+    this.isCreateModalOpen.set(false);
+    this.editingProduct.set(null);
+    this.resetProductForm();
+  }
+
+  submitProduct(): void {
+    if (this.productForm.invalid) {
+      Object.values(this.productForm.controls).forEach(control => {
+        control.markAsDirty();
+        control.updateValueAndValidity();
+      });
+      return;
+    }
+
+    this.saving.set(true);
+    const payload = this.productForm.getRawValue();
+    const editing = this.editingProduct();
+    const request$ = editing
+      ? this.productService.updateProduct(editing.id, payload)
+      : this.productService.createProduct(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.message.success(editing ? 'Producto actualizado correctamente' : 'Producto creado correctamente');
+        this.isCreateModalOpen.set(false);
+        this.editingProduct.set(null);
+        this.resetProductForm();
+        this.loadProducts();
+        this.saving.set(false);
+      },
+      error: (error: HttpErrorResponse) => {
+        const apiMessage = error.error?.message;
+        this.message.error(
+          apiMessage || (editing ? 'Error al actualizar el producto' : 'Error al crear el producto')
+        );
+        this.saving.set(false);
+      }
+    });
+  }
+
+  private resetProductForm(): void {
+    this.productForm.reset({
+      code: '',
+      name: '',
+      category_id: 0,
+      purchase_price: 0,
+      sale_price: 0,
+      current_stock: 0,
+      minimum_stock: 0,
+      is_active: true
+    });
   }
 
   onQuickFilterChanged(event: Event): void {
