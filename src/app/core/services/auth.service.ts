@@ -28,6 +28,7 @@ export class AuthService {
       .pipe(
         tap(response => {
           this.storage.setToken(response.access_token, remember);
+          this.isAuthenticated.set(true);
           this.getCurrentUser();
         })
       );

@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridOptions } from 'ag-grid-community';
+import { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -12,50 +12,15 @@ import { CustomerService } from '../services/customer.service';
 @Component({
   selector: 'app-customers-list',
   standalone: true,
+  host: { ngSkipHydration: 'true' },
   imports: [CommonModule, AgGridAngular, NzButtonModule, NzInputModule, NzIconModule],
-  template: `
-    <div class="page-container">
-      <div class="page-header">
-        <div>
-          <h1>Gestión de Clientes</h1>
-          <p>Administra los clientes del sistema</p>
-        </div>
-        <button nz-button nzType="primary">
-          <span nz-icon nzType="plus"></span>
-          Nuevo Cliente
-        </button>
-      </div>
-      <div class="grid-wrapper">
-        <ag-grid-angular
-          class="ag-theme-alpine"
-          style="width: 100%; height: 600px;"
-          [rowData]="rowData()"
-          [columnDefs]="colDefs"
-          [gridOptions]="gridOptions"
-        />
-      </div>
-    </div>
-  `,
-  styles: [`
-    .page-container {
-      height: 100%;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-    }
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
-      p { color: #8c8c8c; margin: 0; }
-    }
-    .grid-wrapper { flex: 1; }
-  `]
+  templateUrl: './customers-list.component.html',
+  styleUrls: ['./customers-list.component.scss']
 })
 export class CustomersListComponent implements OnInit {
   loading = signal(false);
   rowData = signal<Customer[]>([]);
+  private gridApi?: GridApi<Customer>;
 
   colDefs: ColDef<Customer>[] = [
     { field: 'document_number', headerName: 'RUC/DNI', width: 130, pinned: 'left' },
@@ -75,7 +40,7 @@ export class CustomersListComponent implements OnInit {
 
   gridOptions: GridOptions = {
     theme: 'legacy',
-    defaultColDef: { sortable: true, resizable: true, filter: true },
+    defaultColDef: { sortable: true, resizable: true, filter: true, minWidth: 255 },
     pagination: true,
     paginationPageSize: 20,
     animateRows: true
@@ -91,5 +56,14 @@ export class CustomersListComponent implements OnInit {
       next: (customers) => this.rowData.set(customers),
       error: () => this.message.error('Error al cargar clientes')
     });
+  }
+
+  onGridReady(params: GridReadyEvent<Customer>): void {
+    this.gridApi = params.api;
+  }
+
+  onQuickFilterChanged(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.gridApi?.setGridOption('quickFilterText', value);
   }
 }

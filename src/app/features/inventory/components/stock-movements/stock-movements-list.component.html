@@ -1,0 +1,43 @@
+<div class="inventory-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Movimientos de Inventario</h1>
+      <p>Historial de entradas y salidas de stock</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="primary">
+        <span nz-icon nzType="plus"></span>
+        Registrar Movimiento
+      </button>
+    </div>
+  </div>
+
+  <div class="grid-container">
+    <div class="grid-toolbar">
+      <nz-input-group [nzPrefix]="prefixIcon" class="search-input">
+        <input
+          nz-input
+          placeholder="Buscar movimientos..."
+          (input)="onQuickFilterChanged($event)"
+        />
+      </nz-input-group>
+      <ng-template #prefixIcon>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
+    </div>
+
+    <div class="table-layout">
+      <div class="table-panel">
+        <div class="table-scroll">
+          <ag-grid-angular
+            class="ag-theme-alpine inventory-grid"
+            [rowData]="rowData()"
+            [columnDefs]="colDefs"
+            [gridOptions]="gridOptions"
+            (gridReady)="onGridReady($event)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

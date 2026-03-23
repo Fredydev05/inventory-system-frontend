@@ -1,0 +1,43 @@
+<div class="customers-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Gestión de Clientes</h1>
+      <p>Administra los clientes del sistema</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="primary">
+        <span nz-icon nzType="plus"></span>
+        Nuevo Cliente
+      </button>
+    </div>
+  </div>
+
+  <div class="grid-container">
+    <div class="grid-toolbar">
+      <nz-input-group [nzPrefix]="prefixIcon" class="search-input">
+        <input
+          nz-input
+          placeholder="Buscar clientes..."
+          (input)="onQuickFilterChanged($event)"
+        />
+      </nz-input-group>
+      <ng-template #prefixIcon>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
+    </div>
+
+    <div class="table-layout">
+      <div class="table-panel">
+        <div class="table-scroll">
+          <ag-grid-angular
+            class="ag-theme-alpine customers-grid"
+            [rowData]="rowData()"
+            [columnDefs]="colDefs"
+            [gridOptions]="gridOptions"
+            (gridReady)="onGridReady($event)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
