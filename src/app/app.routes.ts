@@ -30,7 +30,7 @@ export const routes: Routes = [
       },
       {
         path: 'purchases',
-        loadComponent: () => import('./features/sales/components/invoices/invoices-list.component').then(m => m.InvoicesListComponent)
+        loadChildren: () => import('./features/purchases/purchases.routes').then(m => m.purchasesRoutes)
       },
       {
         path: 'sales',

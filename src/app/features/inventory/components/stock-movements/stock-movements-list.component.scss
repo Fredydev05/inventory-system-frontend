@@ -83,7 +83,7 @@
 }
 
 .inventory-grid {
-  min-width: 900px;
+  width: 100%;
   height: 600px;
 
   ::ng-deep {
@@ -136,6 +136,13 @@
   }
 
   .inventory-grid {
-    min-width: 860px;
+    width: 100%;
   }
+}
+
+.table-skeleton {
+  min-width: 980px;
+  min-height: 600px;
+  padding: 24px;
+  background: #ffffff;
 }

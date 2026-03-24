@@ -1,13 +1,13 @@
-<div class="sales-container">
+<div class="purchases-container">
   <div class="page-header">
     <div class="header-content">
-      <h1>Ventas</h1>
-      <p>Historial de facturas y ventas registradas</p>
+      <h1>Compras</h1>
+      <p>Historial de órdenes de compra a proveedores</p>
     </div>
     <div class="header-actions">
       <button nz-button nzType="primary">
         <span nz-icon nzType="plus"></span>
-        Nueva Venta
+        Nueva Orden
       </button>
     </div>
   </div>
@@ -17,7 +17,7 @@
       <nz-input-group [nzPrefix]="prefixIcon" class="search-input">
         <input
           nz-input
-          placeholder="Buscar ventas..."
+          placeholder="Buscar compras..."
           (input)="onQuickFilterChanged($event)"
         />
       </nz-input-group>
@@ -28,7 +28,7 @@
 
     <div class="table-layout">
       <div class="table-panel">
-        <ng-container *ngIf="loading(); else salesGrid">
+        <ng-container *ngIf="loading(); else purchasesGrid">
           <div class="table-scroll">
             <div class="table-skeleton">
               <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 10 }"></nz-skeleton>
@@ -36,10 +36,10 @@
           </div>
         </ng-container>
 
-        <ng-template #salesGrid>
+        <ng-template #purchasesGrid>
           <div class="table-scroll">
             <ag-grid-angular
-              class="ag-theme-alpine sales-grid"
+              class="ag-theme-alpine purchases-grid"
               [rowData]="rowData()"
               [columnDefs]="colDefs"
               [gridOptions]="gridOptions"

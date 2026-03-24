@@ -7,11 +7,11 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
-import { Invoice } from '../../models/invoice.model';
-import { InvoiceService } from '../../services/invoice.service';
+import { PurchaseOrder } from '../../models/purchase.model';
+import { PurchaseService } from '../../services/purchase.service';
 
 @Component({
-  selector: 'app-invoices-list',
+  selector: 'app-purchases-list',
   standalone: true,
   host: { ngSkipHydration: 'true' },
   imports: [
@@ -22,33 +22,32 @@ import { InvoiceService } from '../../services/invoice.service';
     NzInputModule,
     NzSkeletonModule
   ],
-  templateUrl: './invoices-list.component.html',
-  styleUrl: './invoices-list.component.scss'
+  templateUrl: './purchases-list.component.html',
+  styleUrl: './purchases-list.component.scss'
 })
-export class InvoicesListComponent implements OnInit {
+export class PurchasesListComponent implements OnInit {
   loading = signal(false);
-  rowData = signal<Invoice[]>([]);
+  rowData = signal<PurchaseOrder[]>([]);
 
-  private gridApi?: GridApi<Invoice>;
-  private invoiceService = inject(InvoiceService);
+  private gridApi?: GridApi<PurchaseOrder>;
+  private purchaseService = inject(PurchaseService);
   private message = inject(NzMessageService);
 
-  colDefs: ColDef<Invoice>[] = [
+  colDefs: ColDef<PurchaseOrder>[] = [
     {
-      field: 'invoice_number',
-      headerName: 'Nº Factura',
+      field: 'order_number',
+      headerName: 'Nº Orden',
       width: 150,
       pinned: 'left',
       filter: 'agTextColumnFilter',
-      floatingFilter: true,
-      cellClass: 'cell-ellipsis'
+      floatingFilter: true
     },
     {
-      headerName: 'Cliente',
+      headerName: 'Proveedor',
       width: 220,
       filter: 'agTextColumnFilter',
       floatingFilter: true,
-      valueGetter: params => params.data?.customer?.name || '-',
+      valueGetter: params => params.data?.supplier?.name || '-',
       cellClass: 'cell-ellipsis'
     },
     {
@@ -67,12 +66,13 @@ export class InvoicesListComponent implements OnInit {
     {
       field: 'status',
       headerName: 'Estado',
-      width: 130,
-      cellRenderer: (params: ICellRendererParams<Invoice>) => {
+      width: 160,
+      cellRenderer: (params: ICellRendererParams<PurchaseOrder>) => {
         const statusMap: Record<string, { label: string; bg: string; color: string; border: string }> = {
-          PENDING:   { label: 'Pendiente',  bg: '#fffbe6', color: '#ad6800', border: '#ffe58f' },
-          PAID:      { label: 'Pagada',     bg: '#f6ffed', color: '#52c41a', border: '#b7eb8f' },
-          CANCELLED: { label: 'Cancelada',  bg: '#fff1f0', color: '#ff4d4f', border: '#ffa39e' }
+          PENDING:         { label: 'Pendiente',        bg: '#fffbe6', color: '#ad6800', border: '#ffe58f' },
+          PENDING_RECEIPT: { label: 'Pend. Recepción',  bg: '#e6f4ff', color: '#0958d9', border: '#91caff' },
+          COMPLETED:       { label: 'Completada',       bg: '#f6ffed', color: '#52c41a', border: '#b7eb8f' },
+          CANCELLED:       { label: 'Cancelada',        bg: '#fff1f0', color: '#ff4d4f', border: '#ffa39e' }
         };
         const s = statusMap[params.value] ?? { label: params.value, bg: '#f5f5f5', color: '#595959', border: '#d9d9d9' };
         return `<span style="padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;background:${s.bg};color:${s.color};border:1px solid ${s.border}">${s.label}</span>`;
@@ -80,7 +80,7 @@ export class InvoicesListComponent implements OnInit {
     }
   ];
 
-  gridOptions: GridOptions<Invoice> = {
+  gridOptions: GridOptions<PurchaseOrder> = {
     theme: 'legacy',
     defaultColDef: { sortable: true, resizable: true, filter: true, minWidth: 100 },
     pagination: true,
@@ -92,19 +92,19 @@ export class InvoicesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading.set(true);
-    this.invoiceService.getInvoices().subscribe({
-      next: invoices => {
-        this.rowData.set(invoices);
+    this.purchaseService.getPurchaseOrders().subscribe({
+      next: orders => {
+        this.rowData.set(orders);
         this.loading.set(false);
       },
       error: () => {
-        this.message.error('Error al cargar las ventas');
+        this.message.error('Error al cargar las compras');
         this.loading.set(false);
       }
     });
   }
 
-  onGridReady(params: GridReadyEvent<Invoice>): void {
+  onGridReady(params: GridReadyEvent<PurchaseOrder>): void {
     this.gridApi = params.api;
     params.api.sizeColumnsToFit();
   }
