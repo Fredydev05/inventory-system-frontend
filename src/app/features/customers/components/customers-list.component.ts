@@ -6,6 +6,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { Customer } from '../models/customer.model';
 import { CustomerService } from '../services/customer.service';
 
@@ -13,7 +14,7 @@ import { CustomerService } from '../services/customer.service';
   selector: 'app-customers-list',
   standalone: true,
   host: { ngSkipHydration: 'true' },
-  imports: [CommonModule, AgGridAngular, NzButtonModule, NzInputModule, NzIconModule],
+  imports: [CommonModule, AgGridAngular, NzButtonModule, NzInputModule, NzIconModule, NzSkeletonModule],
   templateUrl: './customers-list.component.html',
   styleUrls: ['./customers-list.component.scss']
 })
@@ -40,10 +41,11 @@ export class CustomersListComponent implements OnInit {
 
   gridOptions: GridOptions = {
     theme: 'legacy',
-    defaultColDef: { sortable: true, resizable: true, filter: true, minWidth: 255 },
+    defaultColDef: { sortable: true, resizable: true, filter: true, minWidth: 100 },
     pagination: true,
     paginationPageSize: 20,
-    animateRows: true
+    animateRows: true,
+    onGridSizeChanged: params => params.api.sizeColumnsToFit()
   };
 
   constructor(
@@ -52,14 +54,22 @@ export class CustomersListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loading.set(true);
     this.customerService.getCustomers().subscribe({
-      next: (customers) => this.rowData.set(customers),
-      error: () => this.message.error('Error al cargar clientes')
+      next: (customers) => {
+        this.rowData.set(customers);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.message.error('Error al cargar clientes');
+        this.loading.set(false);
+      }
     });
   }
 
   onGridReady(params: GridReadyEvent<Customer>): void {
     this.gridApi = params.api;
+    params.api.sizeColumnsToFit();
   }
 
   onQuickFilterChanged(event: Event): void {

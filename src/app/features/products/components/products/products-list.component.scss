@@ -36,10 +36,6 @@
 
       button {
         height: 36px;
-
-        span[nz-icon] {
-          margin-right: 8px;
-        }
       }
     }
   }
@@ -139,7 +135,7 @@
 }
 
 .products-grid {
-  min-width: 980px;
+  width: 100%;
   height: 600px;
 
   ::ng-deep {
@@ -320,6 +316,6 @@
   }
 
   .products-grid {
-    min-width: 860px;
+    width: 100%;
   }
 }

@@ -28,15 +28,25 @@
 
     <div class="table-layout">
       <div class="table-panel">
-        <div class="table-scroll">
-          <ag-grid-angular
-            class="ag-theme-alpine inventory-grid"
-            [rowData]="rowData()"
-            [columnDefs]="colDefs"
-            [gridOptions]="gridOptions"
-            (gridReady)="onGridReady($event)"
-          />
-        </div>
+        <ng-container *ngIf="loading(); else inventoryGrid">
+          <div class="table-scroll">
+            <div class="table-skeleton">
+              <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 10 }"></nz-skeleton>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #inventoryGrid>
+          <div class="table-scroll">
+            <ag-grid-angular
+              class="ag-theme-alpine inventory-grid"
+              [rowData]="rowData()"
+              [columnDefs]="colDefs"
+              [gridOptions]="gridOptions"
+              (gridReady)="onGridReady($event)"
+            />
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-.customers-container {
+.sales-container {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -34,10 +34,6 @@
 
       button {
         height: 36px;
-
-        span[nz-icon] {
-          margin-right: 8px;
-        }
       }
     }
   }
@@ -82,7 +78,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.customers-grid {
+.table-skeleton {
+  min-width: 980px;
+  min-height: 600px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.sales-grid {
   width: 100%;
   height: 600px;
 
@@ -112,11 +115,23 @@
       display: flex;
       align-items: center;
     }
+
+    .cell-ellipsis {
+      overflow: hidden;
+
+      .ag-cell-value {
+        display: inline-block;
+        max-width: 12rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
   }
 }
 
 @media (max-width: 768px) {
-  .customers-container {
+  .sales-container {
     .page-header {
       flex-direction: column;
       align-items: stretch;
@@ -135,14 +150,7 @@
     }
   }
 
-  .customers-grid {
-    width: 100%;
+  .sales-grid {
+    min-width: 760px;
   }
-}
-
-.table-skeleton {
-  min-width: 980px;
-  min-height: 600px;
-  padding: 24px;
-  background: #ffffff;
 }

@@ -188,6 +188,7 @@ export class ProductsListComponent implements OnInit {
     paginationPageSize: 20,
     paginationPageSizeSelector: [10, 20, 50, 100],
     animateRows: true,
+    onGridSizeChanged: params => params.api.sizeColumnsToFit(),
     context: {
       onEdit: (product: Product) => this.editProduct(product),
       onDelete: (product: Product) => this.deleteProduct(product)
@@ -247,6 +248,7 @@ export class ProductsListComponent implements OnInit {
 
   onGridReady(params: GridReadyEvent<Product>): void {
     this.gridApi = params.api;
+    params.api.sizeColumnsToFit();
     this.columnOptions.forEach(column => {
       this.gridApi?.setColumnsVisible([column.key], column.visible);
     });
