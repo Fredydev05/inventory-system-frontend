@@ -28,7 +28,7 @@ import { ProductService } from '../../services/product.service';
   imports: [
     CommonModule,
     AgGridAngular,
-    ProductActionsCellComponent,
+    //ProductActionsCellComponent,
     NzButtonModule,
     NzDropDownModule,
     NzInputModule,

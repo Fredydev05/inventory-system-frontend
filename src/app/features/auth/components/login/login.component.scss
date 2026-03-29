@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f4efe8;
+  background-color: #003521;
   position: relative;
   overflow: hidden;
 }
@@ -25,7 +25,7 @@
       height: 560px;
       top: -160px;
       left: -120px;
-      background: rgba(205, 168, 150, 0.52);
+      background: rgba(150, 205, 159, 0.589);
       filter: blur(100px);
     }
 
@@ -34,7 +34,7 @@
       height: 480px;
       bottom: -130px;
       right: -80px;
-      background: rgba(162, 193, 175, 0.48);
+      background: rgba(162, 193, 175, 0.507);
       filter: blur(110px);
     }
 
@@ -43,7 +43,7 @@
       height: 380px;
       top: 38%;
       left: 55%;
-      background: rgba(188, 175, 215, 0.42);
+      background: rgba(175, 215, 184, 0.664);
       filter: blur(95px);
     }
 
@@ -52,7 +52,7 @@
       height: 300px;
       top: 10%;
       right: 25%;
-      background: rgba(228, 205, 165, 0.5);
+      background: rgba(165, 228, 207, 0.568);
       filter: blur(85px);
     }
 
@@ -61,7 +61,7 @@
       height: 250px;
       bottom: 20%;
       left: 20%;
-      background: rgba(195, 175, 200, 0.38);
+      background: rgba(175, 200, 192, 0.699);
       filter: blur(90px);
     }
   }
@@ -72,7 +72,7 @@
   z-index: 1;
   width: 100%;
   max-width: 400px;
-  background: #ffffff;
+  background: #2e2e2e;
   border-radius: 4px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.09), 0 1px 4px rgba(0, 0, 0, 0.05);
   padding: 48px 40px 40px;
@@ -87,14 +87,14 @@
 
     .logo-icon {
       font-size: 32px;
-      color: #333;
+      color: #ffffff;
     }
   }
 
   h1 {
     font-size: 20px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #ffffff;
     margin-bottom: 6px;
     letter-spacing: -0.2px;
   }
@@ -130,7 +130,7 @@
 
   .password-toggle {
     cursor: pointer;
-    color: #aaa;
+    color: #cac8c8;
     transition: color 0.2s;
 
     &:hover {
@@ -140,17 +140,17 @@
 
   label {
     font-size: 13px;
-    color: #555;
+    color: #949393;
   }
 
   .login-form-forgot {
     float: right;
     font-size: 13px;
-    color: #666;
+    color: #949393;
     text-decoration: none;
 
     &:hover {
-      color: #1a1a1a;
+      color: #646464;
       text-decoration: underline;
     }
   }
